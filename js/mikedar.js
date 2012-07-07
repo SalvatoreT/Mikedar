@@ -7,8 +7,10 @@ var blipDuration = 100;
 var blipX = 15;
 var blipY = 10;
 var blipAlpha = .8;
-var blipLives = 3;
+var blipLives = 1;
 var refreshRate = 30; // ms
+var cWidth = 600;
+var cHeight = 400;
 // lazy gradient hack
 var rS = 53;
 var gS = 150;
@@ -28,9 +30,7 @@ var radius = 70;
 // map of {x, y, t}
 var blips = [];
 
-
-
-		
+	
 window.onload = function() {
         canvas = document.getElementById("canvas");
 		context = canvas.getContext("2d");
@@ -42,12 +42,12 @@ window.onload = function() {
 		},refreshRate);
 		
 		for (var i=0; i<numActive; i++) {
-			blips.push(getBlip());
+			blips.push(getBlip(frame_));
 		}
       };
 
 function draw() {
-	context.clearRect(0,0,600,400);
+	context.clearRect(0,0,cWidth,cHeight);
 	var frame = frame_ / speed;
 	frame %= 2 * Math.PI;
 
@@ -79,13 +79,13 @@ function draw() {
 		context.fillStyle = rgb;
 		context.fill();
 	}
-	
+	// high quality blip action
 	for (var i=0; i<numActive; i++) {
 		var blip = blips[i];
 		if (--blip.t < 0) {
 			blip.t = blipDuration;
 			if (--blip.lives <= 0) {
-				blip = getBlip();
+				blip = getBlip(frame);
 			}
 			blips[i] = blip;
 		}
@@ -97,11 +97,25 @@ function draw() {
 	}
 }
 
-function getBlip() {
+function getBlip(frame) {
 	var blip = [];
-	blip.x = (Math.random() - .5) * radius * 2;
-	blip.y = (Math.random() - .5) * radius * 2;
-	blip.t = blipDuration;
+	
+	var dist = Math.min(
+		Math.abs(gaussian(radius/2, radius/2)), radius);
+	// todo: max/min
+	
+	blip.x = Math.sin(frame) * dist;
+	blip.y = Math.cos(frame) * dist;
+	//blip.x = (Math.random() - .5) * radius * 2;
+	//blip.y = (Math.random() - .5) * radius * 2;
+	blip.t = gaussian(blipDuration, blipDuration/2);
 	blip.lives = blipLives;
 	return blip;
+}
+
+// snag a random from a normal distribution
+function gaussian(mean, std) {
+	// from http://www.protonfish.com/random.shtml
+	var rand = (Math.random()*2-1)+(Math.random()*2-1)+(Math.random()*2-1);
+	return rand*std+mean;
 }
