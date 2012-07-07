@@ -6,6 +6,16 @@ var context;
 var centerX;
 var centerY;
 var radius = 70;
+
+// lazy gradient hack
+// rgb(53, 150, 7) to  85, 252, 6
+var rS = 53;
+var gS = 150;
+var bS = 6;
+var rD = 85 - rS;
+var gD = 252 - gS;
+var bD = 7 - bS;
+
 		
 window.onload = function() {
         canvas = document.getElementById("canvas");
@@ -23,6 +33,7 @@ function draw() {
 	var frame = frame_ / (.5 * Math.PI);
 	frame /= 10;
 
+	context.globalAlpha = 1;
 	// background circle
 	context.beginPath();
 	context.arc(centerX, centerY, radius + .2, 0, 2 * Math.PI, false);
@@ -38,19 +49,27 @@ function draw() {
 		context.stroke();
 	}
 	// main bar
-	context.beginPath();
-	context.arc(centerX, centerY, radius, frame, 
-			frame + .05, false);
-	context.lineTo(centerX, centerY);
-	context.fillStyle = "green";
-	context.fill();
+	context.globalAlpha = 0.75;
+	for (var i=25; i>0; i--) {
+		context.beginPath();
+		context.arc(centerX, centerY, radius, frame + (.2*i)/16, 
+				frame + (.2*(i))/15, false);
+		context.lineTo(centerX, centerY);
+		var rgb = "rgb(" + Math.round(rS + rD*i/15) + ',' +
+				Math.round(gS + gD*i/15) + ',' + 
+				Math.round(bS + bD*i/15) + ')';
+		context.fillStyle = rgb;
+		//alert(rgb);
+		//85, 252, 6
+		context.fill();
+	}
 	
 	// outer bar
-	context.beginPath();
-	context.arc(centerX, centerY, radius, frame, 
-			frame - .1, true);
-	context.lineTo(centerX, centerY);
-	context.fillStyle = "grey";
-	context.fill();
+	//context.beginPath();
+	//context.arc(centerX, centerY, radius, frame, 
+	//		frame - .1, true);
+	//context.lineTo(centerX, centerY);
+	//context.fillStyle = "grey";
+	//context.fill();
 
 }
