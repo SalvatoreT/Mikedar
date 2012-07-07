@@ -1,17 +1,41 @@
 // mikedar.js
 
+var frame_ = 0;
+var canvas; 
+var context;
+var centerX;
+var centerY;
+var radius = 70;
+		
 window.onload = function() {
-        var canvas = document.getElementById("canvas");
-        var context = canvas.getContext("2d");
-        var centerX = canvas.width / 2;
-        var centerY = canvas.height / 2;
-        var radius = 70;
+        canvas = document.getElementById("canvas");
+		context = canvas.getContext("2d");
+		centerX = canvas.width / 2;
+		centerY = canvas.height / 2;
 
-        context.beginPath();
-        context.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
-        context.fillStyle = "#8ED6FF";
-        context.fill();
-        context.lineWidth = 5;
-        context.strokeStyle = "black";
-        context.stroke();
+		setInterval(function() {
+			draw(frame_++);
+		},50);
+
+        //context.lineWidth = 5;
+        //context.strokeStyle = "black";
+        //context.stroke();
       };
+
+function draw() {
+	var frame = frame_ / (.5 * Math.PI);
+	frame /= 10;
+
+	context.beginPath();
+	context.arc(centerX, centerY, radius + .2, 0, 2 * Math.PI, false);
+	context.fillStyle = "silver";
+	context.fill();
+	
+	context.beginPath();
+	context.arc(centerX, centerY, radius, frame, 
+			frame + .05, false);
+	context.lineTo(centerX, centerY);
+	context.fillStyle = "green";
+	context.fill();
+
+}
