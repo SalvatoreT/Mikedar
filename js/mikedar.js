@@ -17,25 +17,40 @@ window.onload = function() {
 			draw(frame_++);
 		},50);
 
-        //context.lineWidth = 5;
-        //context.strokeStyle = "black";
-        //context.stroke();
       };
 
 function draw() {
 	var frame = frame_ / (.5 * Math.PI);
 	frame /= 10;
 
+	// background circle
 	context.beginPath();
 	context.arc(centerX, centerY, radius + .2, 0, 2 * Math.PI, false);
 	context.fillStyle = "silver";
 	context.fill();
 	
+	// inner radars
+	for (var i=1; i<=4; i++) {
+		context.beginPath();
+		context.arc(centerX, centerY, i*radius/4 + 1.5, 0, 2 * Math.PI, false);
+		context.lineWidth = 2;
+		context.strokeStyle = "#52FF00";
+		context.stroke();
+	}
+	// main bar
 	context.beginPath();
 	context.arc(centerX, centerY, radius, frame, 
 			frame + .05, false);
 	context.lineTo(centerX, centerY);
 	context.fillStyle = "green";
+	context.fill();
+	
+	// outer bar
+	context.beginPath();
+	context.arc(centerX, centerY, radius, frame, 
+			frame - .1, true);
+	context.lineTo(centerX, centerY);
+	context.fillStyle = "grey";
 	context.fill();
 
 }
