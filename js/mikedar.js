@@ -8,7 +8,6 @@ var centerY;
 var radius = 70;
 
 // lazy gradient hack
-// rgb(53, 150, 7) to  85, 252, 6
 var rS = 53;
 var gS = 150;
 var bS = 6;
@@ -49,7 +48,7 @@ function draw() {
 		context.stroke();
 	}
 	// main bar
-	context.globalAlpha = 0.75;
+	context.globalAlpha = 0.64;
 	for (var i=25; i>0; i--) {
 		context.beginPath();
 		context.arc(centerX, centerY, radius, frame + (.2*i)/16, 
@@ -59,17 +58,6 @@ function draw() {
 				Math.round(gS + gD*i/15) + ',' + 
 				Math.round(bS + bD*i/15) + ')';
 		context.fillStyle = rgb;
-		//alert(rgb);
-		//85, 252, 6
 		context.fill();
 	}
-	
-	// outer bar
-	//context.beginPath();
-	//context.arc(centerX, centerY, radius, frame, 
-	//		frame - .1, true);
-	//context.lineTo(centerX, centerY);
-	//context.fillStyle = "grey";
-	//context.fill();
-
 }
