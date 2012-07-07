@@ -36,7 +36,7 @@ function draw() {
 	// background circle
 	context.beginPath();
 	context.arc(centerX, centerY, radius + .2, 0, 2 * Math.PI, false);
-	context.fillStyle = "silver";
+	context.fillStyle = "#1C800F";
 	context.fill();
 	
 	// inner radars
