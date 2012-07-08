@@ -24,7 +24,7 @@ var bD = 7 - bS;
 
 // vars
 var frame_;
-var canvas; 
+var canvas;
 var context;
 var centerX;
 var centerY;
@@ -44,7 +44,7 @@ window.onload = function() {
     }
     setInterval(function() {
         draw(frame_++);
-    }, refreshRate);	
+    }, refreshRate);
 };
 
 function draw() {
@@ -73,11 +73,11 @@ function draw() {
     context.globalAlpha = 0.64;
     for (var i=25; i>0; i--) {
         context.beginPath();
-        context.arc(centerX, centerY, radius + 3, frame + (.2*i)/16, 
+        context.arc(centerX, centerY, radius + 3, frame + (.2*i)/16,
                 frame + (.2*(i))/15, false);
         context.lineTo(centerX, centerY);
         var rgb = "rgb(" + Math.round(rS + rD*i/15) + ',' +
-            Math.round(gS + gD*i/15) + ',' + 
+            Math.round(gS + gD*i/15) + ',' +
             Math.round(bS + bD*i/15) + ')';
         context.fillStyle = rgb;
         context.fill();
@@ -87,7 +87,7 @@ function draw() {
         var blip = blips[i];
         if (!greenBlips) {
             blip.container.style.opacity = Math.max(0, blipAlpha * blip.t / blipDuration);
-        } 
+        }
         if (--blip.t < 0 && --blip.cooldown < 0) {
             blip.t = blipDuration;
 
@@ -100,7 +100,7 @@ function draw() {
         if (greenBlips) {
             context.globalAlpha = Math.max(0, blipAlpha * blip.t / blipDuration);
             context.beginPath();
-            context.rect(centerX + blip.x - blipX/2, 
+            context.rect(centerX + blip.x - blipX/2,
                     centerY + blip.y - blipY/2, blipX, blipY);
             context.fillStyle = '#6AC934';
             context.fill();
@@ -118,8 +118,8 @@ function getBlip(frame, invisible, oldBlip) {
 
     blip.x = Math.cos(frame + .5) * dist;
     blip.y = Math.sin(frame + .5) * dist;
-    blip.cooldown = invisible ? Math.random() * blipDuration/4 : 
-        Math.abs(gaussian(cooldown, cooldown/2)) + 
+    blip.cooldown = invisible ? Math.random() * blipDuration/4 :
+        Math.abs(gaussian(cooldown, cooldown/2)) +
         Math.random()*blipDuration;
     if (randomDuration && !invisible) {
         blip.t = gaussian(blipDuration, blipDuration/2);
@@ -142,7 +142,7 @@ function getBlip(frame, invisible, oldBlip) {
             document.getElementById('blips').appendChild(container);
             blip.div = div;
             blip.container = container;
-            blip.textDiv = textDiv; 
+            blip.textDiv = textDiv;
         } else {
             // clear previous image
             blip.div = oldBlip.div;
