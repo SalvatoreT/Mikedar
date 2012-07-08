@@ -32,7 +32,7 @@ var centerX;
 var centerY;
 var radius = 70;
 
-// map of {x, y, t}
+// list of blips
 var blips = [];
 
 	
@@ -92,7 +92,7 @@ function draw() {
 			blip.t = blipDuration;
 			
 			if (--blip.lives <= 0) {
-				blip = getBlip(frame);
+				blip = getBlip(frame, null, blip);
 			}
 			blips[i] = blip;
 		}
@@ -106,7 +106,7 @@ function draw() {
 	}
 }
 
-function getBlip(frame, invisible) {
+function getBlip(frame, invisible, oldBlip) {
 	var blip = {};
 	
 	var dist = Math.min(
@@ -116,8 +116,9 @@ function getBlip(frame, invisible) {
 	
 	blip.x = Math.cos(frame + .5) * dist;
 	blip.y = Math.sin(frame + .5) * dist;
-	blip.cooldown = invisible ? Math.abs(gaussian(blipDuration/4, blipDuration/2)) : 
-			Math.abs(gaussian(cooldown, cooldown/2)) + blipDuration;
+	blip.cooldown = invisible ? Math.random() * blipDuration/4 : 
+			Math.abs(gaussian(cooldown, cooldown/2)) + 
+			Math.random()*blipDuration;
 	if (randomDuration && !invisible) {
 		blip.t = gaussian(blipDuration, blipDuration/2);
 	} else {
@@ -125,6 +126,18 @@ function getBlip(frame, invisible) {
 	}
 	blip.lives = blipLives;
 	blip.img = getImage();
+	
+	if (!oldBlip || !oldBlip.div) {
+		var div = document.createElement('div');
+		div.className = "blipImg";
+		document.getElementById('blips').appendChild(div);
+		blip.div = div;
+	} else {
+		// clear previous image
+		blip.div = oldBlip.div;
+		blip.div.innerHTML = '';
+	}
+	blip.div.appendChild(blip.img);
 	return blip;
 }
 
