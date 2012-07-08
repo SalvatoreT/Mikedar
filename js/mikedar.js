@@ -3,19 +3,17 @@
 // constants
 var speed = (5 * Math.PI); // higher = faster radar
 var numActive = 3;
-var blipDuration = 115;
+var blipDuration = 25;
 var blipX = 15;
 var blipY = 10;
 var blipAlpha = .8;
 var blipLives = 1;
 var refreshRate = 30; // ms
-var cWidth = 600;
-var cHeight = 400;
 var cooldown = 25;
 var randomDuration = false;
 var imgWidth = 100;
 var imgHeight = 100;
-
+var greenBlips = false; // Do green blips instead of images
 // lazy gradient hack
 var rS = 53;
 var gS = 150;
@@ -52,6 +50,8 @@ window.onload = function() {
       };
 
 function draw() {
+	var cWidth = canvas.width;
+	var cHeight = canvas.height;
 	context.clearRect(0,0,cWidth,cHeight);
 	var frame = frame_ / speed;
 	frame %= 2 * Math.PI;
@@ -87,7 +87,7 @@ function draw() {
 	// high quality blip action
 	for (var i=0; i<numActive; i++) {
 		var blip = blips[i];
-		
+		blip.div.style.opacity = Math.max(0, blipAlpha * blip.t / blipDuration);
 		if (--blip.t < 0 && --blip.cooldown < 0) {
 			blip.t = blipDuration;
 			
@@ -96,13 +96,15 @@ function draw() {
 			}
 			blips[i] = blip;
 		}
-		context.globalAlpha = Math.max(0, blipAlpha * blip.t / blipDuration);
-		//context.drawImage(blip.img, blip.x, blip.y, imgWidth, imgHeight);
-		context.beginPath();
-        context.rect(centerX + blip.x - blipX/2, 
-				centerY + blip.y - blipY/2, blipX, blipY);
-        context.fillStyle = '#6AC934';
-        context.fill();
+		
+		if (greenBlips) {
+			context.globalAlpha = Math.max(0, blipAlpha * blip.t / blipDuration);
+			context.beginPath();
+			context.rect(centerX + blip.x - blipX/2, 
+					centerY + blip.y - blipY/2, blipX, blipY);
+			context.fillStyle = '#6AC934';
+			context.fill();
+		}
 	}
 }
 
@@ -111,7 +113,7 @@ function getBlip(frame, invisible, oldBlip) {
 	
 	var dist = Math.min(
 		Math.abs(gaussian(radius/2, radius/2)), radius);
-	// todo: max/min
+	// todo: upper/lower bounds so imgs always fit in radar
 	
 	
 	blip.x = Math.cos(frame + .5) * dist;
@@ -137,13 +139,15 @@ function getBlip(frame, invisible, oldBlip) {
 		blip.div = oldBlip.div;
 		blip.div.innerHTML = '';
 	}
+	blip.div.style.top = Math.round(blip.y) + 250 + "px";
+	blip.div.style.left = Math.round(blip.x) + 250 + "px";
 	blip.div.appendChild(blip.img);
 	return blip;
 }
 
 function getImage() {
 	var image = new Image();
-	image.src = "img/vader.png";
+	image.src = "img/vader2.png";
 	return image;
 }
 
