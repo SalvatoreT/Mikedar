@@ -3,7 +3,7 @@
 // constants
 var speed = (5 * Math.PI); // higher = faster radar
 var numActive = 3;
-var blipDuration = 100;
+var blipDuration = 115;
 var blipX = 15;
 var blipY = 10;
 var blipAlpha = .8;
@@ -11,6 +11,11 @@ var blipLives = 1;
 var refreshRate = 30; // ms
 var cWidth = 600;
 var cHeight = 400;
+var cooldown = 25;
+var randomDuration = false;
+var imgWidth = 100;
+var imgHeight = 100;
+
 // lazy gradient hack
 var rS = 53;
 var gS = 150;
@@ -20,7 +25,7 @@ var gD = 252 - gS;
 var bD = 7 - bS;
 
 // vars
-var frame_ = 0;
+var frame_;
 var canvas; 
 var context;
 var centerX;
@@ -36,13 +41,13 @@ window.onload = function() {
 		context = canvas.getContext("2d");
 		centerX = canvas.width / 2;
 		centerY = canvas.height / 2;
-
+		frame_ = Math.round(Math.random() * 200);
 		setInterval(function() {
 			draw(frame_++);
 		},refreshRate);
 		
 		for (var i=0; i<numActive; i++) {
-			blips.push(getBlip(frame_));
+			blips.push(getBlip(frame_, true));
 		}
       };
 
@@ -70,7 +75,7 @@ function draw() {
 	context.globalAlpha = 0.64;
 	for (var i=25; i>0; i--) {
 		context.beginPath();
-		context.arc(centerX, centerY, radius, frame + (.2*i)/16, 
+		context.arc(centerX, centerY, radius + 3, frame + (.2*i)/16, 
 				frame + (.2*(i))/15, false);
 		context.lineTo(centerX, centerY);
 		var rgb = "rgb(" + Math.round(rS + rD*i/15) + ',' +
@@ -82,35 +87,51 @@ function draw() {
 	// high quality blip action
 	for (var i=0; i<numActive; i++) {
 		var blip = blips[i];
-		if (--blip.t < 0) {
+		
+		if (--blip.t < 0 && --blip.cooldown < 0) {
 			blip.t = blipDuration;
+			
 			if (--blip.lives <= 0) {
 				blip = getBlip(frame);
 			}
 			blips[i] = blip;
 		}
-		context.globalAlpha = blipAlpha * blip.t / blipDuration;
+		context.globalAlpha = Math.max(0, blipAlpha * blip.t / blipDuration);
+		//context.drawImage(blip.img, blip.x, blip.y, imgWidth, imgHeight);
 		context.beginPath();
-        context.rect(centerX + blip.x, centerY + blip.y, blipX, blipY);
+        context.rect(centerX + blip.x - blipX/2, 
+				centerY + blip.y - blipY/2, blipX, blipY);
         context.fillStyle = '#6AC934';
         context.fill();
 	}
 }
 
-function getBlip(frame) {
-	var blip = [];
+function getBlip(frame, invisible) {
+	var blip = {};
 	
 	var dist = Math.min(
 		Math.abs(gaussian(radius/2, radius/2)), radius);
 	// todo: max/min
 	
-	blip.x = Math.sin(frame) * dist;
-	blip.y = Math.cos(frame) * dist;
-	//blip.x = (Math.random() - .5) * radius * 2;
-	//blip.y = (Math.random() - .5) * radius * 2;
-	blip.t = gaussian(blipDuration, blipDuration/2);
+	
+	blip.x = Math.cos(frame + .5) * dist;
+	blip.y = Math.sin(frame + .5) * dist;
+	blip.cooldown = invisible ? Math.abs(gaussian(blipDuration/4, blipDuration/2)) : 
+			Math.abs(gaussian(cooldown, cooldown/2)) + blipDuration;
+	if (randomDuration && !invisible) {
+		blip.t = gaussian(blipDuration, blipDuration/2);
+	} else {
+		blip.t = invisible ? 0: blipDuration;
+	}
 	blip.lives = blipLives;
+	blip.img = getImage();
 	return blip;
+}
+
+function getImage() {
+	var image = new Image();
+	image.src = "img/vader.png";
+	return image;
 }
 
 // snag a random from a normal distribution
