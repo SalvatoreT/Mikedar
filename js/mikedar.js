@@ -13,7 +13,7 @@ var cooldown = 25;
 var randomDuration = false;
 var imgWidth = 100;
 var imgHeight = 100;
-var greenBlips = false; // Do green blips instead of images
+var greenBlips = true; // Do green blips instead of images
 // lazy gradient hack
 var rS = 53;
 var gS = 150;
@@ -85,8 +85,10 @@ function draw() {
 	// high quality blip action
 	for (var i=0; i<numActive; i++) {
 		var blip = blips[i];
-		blip.container.style.opacity = Math.max(0, blipAlpha * blip.t / blipDuration);
-		if (--blip.t < 0 && --blip.cooldown < 0) {
+		if (!greenBlips) {
+            blip.container.style.opacity = Math.max(0, blipAlpha * blip.t / blipDuration);
+        } 
+        if (--blip.t < 0 && --blip.cooldown < 0) {
 			blip.t = blipDuration;
 			
 			if (--blip.lives <= 0) {
