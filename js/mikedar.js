@@ -3,7 +3,7 @@
 // constants
 var speed = (5 * Math.PI); // higher = faster radar
 var numActive = 3;
-var blipDuration = 25;
+var blipDuration = 115;
 var blipX = 15;
 var blipY = 10;
 var blipAlpha = .8;
@@ -32,7 +32,6 @@ var radius = 70;
 
 // list of blips
 var blips = [];
-
 	
 window.onload = function() {
         canvas = document.getElementById("canvas");
@@ -40,13 +39,12 @@ window.onload = function() {
 		centerX = canvas.width / 2;
 		centerY = canvas.height / 2;
 		frame_ = Math.round(Math.random() * 200);
-		setInterval(function() {
-			draw(frame_++);
-		},refreshRate);
-		
 		for (var i=0; i<numActive; i++) {
 			blips.push(getBlip(frame_, true));
 		}
+		setInterval(function() {
+			draw(frame_++);
+		}, refreshRate);	
       };
 
 function draw() {
@@ -87,7 +85,7 @@ function draw() {
 	// high quality blip action
 	for (var i=0; i<numActive; i++) {
 		var blip = blips[i];
-		blip.div.style.opacity = Math.max(0, blipAlpha * blip.t / blipDuration);
+		blip.container.style.opacity = Math.max(0, blipAlpha * blip.t / blipDuration);
 		if (--blip.t < 0 && --blip.cooldown < 0) {
 			blip.t = blipDuration;
 			
@@ -127,24 +125,48 @@ function getBlip(frame, invisible, oldBlip) {
 		blip.t = invisible ? 0: blipDuration;
 	}
 	blip.lives = blipLives;
-	blip.img = getImage();
 	
-	if (!oldBlip || !oldBlip.div) {
-		var div = document.createElement('div');
-		div.className = "blipImg";
-		document.getElementById('blips').appendChild(div);
-		blip.div = div;
-	} else {
-		// clear previous image
-		blip.div = oldBlip.div;
-		blip.div.innerHTML = '';
+	if (!greenBlips) {
+		blip = addData(blip);
+		if (!oldBlip || !oldBlip.div) {
+			var container = document.createElement('div');
+			var div = document.createElement('div');
+			var textDiv = document.createElement('div');
+			div.className = "blipImg";
+			container.className = "blipContainer";
+			textDiv.className = "blipText";
+			container.appendChild(div);
+			container.appendChild(textDiv);
+			document.getElementById('blips').appendChild(container);
+			blip.div = div;
+			blip.container = container;
+			blip.textDiv = textDiv; 
+		} else {
+			// clear previous image
+			blip.div = oldBlip.div;
+			blip.container = oldBlip.container;
+			blip.textDiv = oldBlip.textDiv;
+			blip.div.innerHTML = '';
+		}
+		blip.container.style.top = Math.round(blip.y) + 250 + "px";
+		blip.container.style.left = Math.round(blip.x) + 250 + "px";
+		blip.div.appendChild(blip.img);
+		blip.textDiv.innerHTML = blip.text;
 	}
-	blip.div.style.top = Math.round(blip.y) + 250 + "px";
-	blip.div.style.left = Math.round(blip.x) + 250 + "px";
-	blip.div.appendChild(blip.img);
 	return blip;
 }
 
+// Must set blip.text (as string) and blip.img (as Image object)
+// TODO: currently static
+function addData(blip) {
+	var image = new Image();
+	image.src = "img/vader2.png";
+	blip.img = image;
+	blip.text = "<p>stop--it's vader-time</p>";
+	return blip;
+}
+
+// unused; get img object without additional html
 function getImage() {
 	var image = new Image();
 	image.src = "img/vader2.png";
